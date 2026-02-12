@@ -37,4 +37,18 @@ model Car {
 }
 
 
+model Rental {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  carId       Int
+  startDate   DateTime
+  endDate     DateTime
+  totalPrice  Float
+  status      String   @default("pending")
+  createdAt   DateTime @default(now())
+  
+  user        User     @relation(fields: [userId], references: [id])
+  car         Car      @relation(fields: [carId], references: [id])
+  payment     Payment?
+}
 
