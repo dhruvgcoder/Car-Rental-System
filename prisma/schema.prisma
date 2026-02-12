@@ -5,23 +5,61 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
 }
+
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String?
-  createdAt DateTime @default(now())
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  name      String
+  phone     String?
+  createdAt DateTime  @default(now())
+  
+  rentals   Rental[]
+  payments  Payment[]
 }
 
-model Cars{
-  id        Int     @id @default(autoincrement())
-  name      String  
-  model     String  @unique
-  available Boolean 
+model Car {
+  id          Int      @id @default(autoincrement())
+  brand       String
+  model       String
+  year        Int
+  pricePerDay Float
+  available   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  
+  rentals     Rental[]
 }
+
+model Rental {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  carId       Int
+  startDate   DateTime
+  endDate     DateTime
+  totalPrice  Float
+  status      String   @default("pending")
+  createdAt   DateTime @default(now())
+  
+  user        User     @relation(fields: [userId], references: [id])
+  car         Car      @relation(fields: [carId], references: [id])
+  payment     Payment?
+}
+
+model Payment {
+  id        Int      @id @default(autoincrement())
+  rentalId  Int      @unique
+  userId    Int
+  amount    Float
+  status    String   @default("pending")
+  createdAt DateTime @default(now())
+  
+  rental    Rental   @relation(fields: [rentalId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+}
+
