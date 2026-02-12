@@ -52,3 +52,14 @@ model Rental {
   payment     Payment?
 }
 
+model Payment {
+  id        Int      @id @default(autoincrement())
+  rentalId  Int      @unique
+  userId    Int
+  amount    Float
+  status    String   @default("pending")
+  createdAt DateTime @default(now())
+  
+  rental    Rental   @relation(fields: [rentalId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+}
